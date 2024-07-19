@@ -87,6 +87,15 @@ class ProjectControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Project updated"));}
 
+    @Test
+    void givenToken_deleteProject() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.delete("/api/v1/project/"+project.getProjectCode())
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("project is successfully deleted"));}
+
 
 
     private String toJsonString(final Object obj) throws JsonProcessingException {
