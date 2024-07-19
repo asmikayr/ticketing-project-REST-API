@@ -13,6 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 
 import java.time.LocalDate;
 
@@ -55,5 +60,21 @@ class ProjectControllerTest {
                 .andExpect(jsonPath("$.data[0].assignedManager.userName").isString())
                 .andExpect(jsonPath("$.data[0].assignedManager.userName").value("ozzy"));
 
+    }
+
+    @Test
+    void givenToken_createProject(){
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/project")
+                .header("Authorisation", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content())
+    }
+
+    private String toJsonString(final Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.writeValueAsString(obj);
     }
 }
