@@ -63,12 +63,16 @@ class ProjectControllerTest {
     }
 
     @Test
-    void givenToken_createProject(){
+    void givenToken_createProject() throws Exception {
+
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/project")
-                .header("Authorisation", token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content())
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(toJsonString(project)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message").value("Project created"));
+
     }
 
     private String toJsonString(final Object obj) throws JsonProcessingException {
