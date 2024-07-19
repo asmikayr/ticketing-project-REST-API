@@ -17,7 +17,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,7 +48,12 @@ class ProjectControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/api/v1/project")
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].projectCode").exists())
+                .andExpect(jsonPath("$.data[0].assignedManager.userName").exists())
+                .andExpect(jsonPath("$.data[0].assignedManager.userName").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].assignedManager.userName").isString())
+                .andExpect(jsonPath("$.data[0].assignedManager.userName").value("ozzy"));
 
     }
 }
