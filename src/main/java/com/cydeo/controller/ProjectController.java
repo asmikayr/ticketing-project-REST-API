@@ -49,7 +49,7 @@ public class ProjectController{
     public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDTO projectDTO){
         projectService.update(projectDTO);
 
-        return ResponseEntity.ok(new ResponseWrapper("Project created", HttpStatus.CREATED));
+        return ResponseEntity.ok(new ResponseWrapper("Project updated", HttpStatus.CREATED));
     }
 
     @DeleteMapping("/{projectCode}")

@@ -75,6 +75,20 @@ class ProjectControllerTest {
 
     }
 
+    @Test
+    void givenToken_updateProject() throws Exception {
+        project.setProjectName("API Project-2");
+
+        mvc.perform(MockMvcRequestBuilders.put("/api/v1/project")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(toJsonString(project)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Project updated"));}
+
+
+
     private String toJsonString(final Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
