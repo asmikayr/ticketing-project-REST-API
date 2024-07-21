@@ -17,9 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,6 +124,24 @@ public class UserServiceImplTest {
 
         verify(userRepository, times(1)).findAllByIsDeletedOrderByFirstNameDesc(false);
         verify(userRepository, never()).findAllByIsDeletedOrderByFirstNameDesc(true);
+
+    }
+
+    @Test
+    public void should_throw_nosuchelementexception_when_user_not_found(){
+        //given - We don't need it as a mock already return null
+        //when(userRepository.findByUserNameAndIsDeleted(anyString(), anyBoolean())).thenReturn(null);
+        //if it throws an exception we are not going to this step
+       // when(userMapper.convertToDto(any(User.class))).thenReturn(userDTO);
+        //action
+
+        //when+then
+
+       Throwable actualException = assertThrowsExactly(NoSuchElementException.class, () -> userService.findByUserName("SomeUserName"));
+        assertEquals("User not found.", actualException.getMessage());
+    //AssertJ
+       // Throwable actualException = catchThrowable(()-> userService.findByUserName("SomeUserName"));
+
 
     }
 
