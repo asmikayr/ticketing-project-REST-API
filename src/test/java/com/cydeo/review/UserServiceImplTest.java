@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,6 +37,9 @@ public class UserServiceImplTest {
     private TaskService taskService;
     @Mock
     private KeycloakService keycloakService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -142,8 +146,42 @@ public class UserServiceImplTest {
     //AssertJ
        // Throwable actualException = catchThrowable(()-> userService.findByUserName("SomeUserName"));
 
-
     }
+
+    /*
+        //     User Story - 1: As a user of the application, I want my password to be encoded
+    //    so that my account remains secure.
+    //
+    //    Acceptance Criteria:
+    //    1 - When a user creates a new account, their password should be encoded using
+    //    a secure algorithm such as bcrypt or PBKDF2.
+    //
+    //    2 - Passwords should not be stored in plain text in the database or any other storage.
+    //
+    //    3 - Passwords encoding should be implemented consistently throughout the application,
+    //    including any password reset or change functionality.
+     */
+
+    @Test
+    void should_encode_user_password_on_save_operation(){
+        //given
+        when(userMapper.convertToEntity(any(UserDTO.class))).thenReturn(user);
+        when(userRepository.save(any())).thenReturn(user);
+        when(userMapper.convertToDto(any(User.class))).thenReturn(userDTO);
+        when(passwordEncoder.encode(anyString())).thenReturn("some-password");
+
+        String expectedPassword = "some-password";
+
+        //when
+        UserDTO savedUser = userService.save(userDTO);
+
+        //then
+        assertEquals(expectedPassword, savedUser.getPassWord());
+        //verify that passwordEncoder is executed
+        verify(passwordEncoder).encode(anyString());
+    }
+
+
 
 
 }
