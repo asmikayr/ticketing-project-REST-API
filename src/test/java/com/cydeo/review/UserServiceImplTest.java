@@ -226,9 +226,20 @@ public class UserServiceImplTest {
         //then
         assertTrue(managerUser.getIsDeleted());
         assertNotEquals("user3", managerUser.getUserName());
+    }
 
-
-
+    @Test
+    void should_delete_employee() throws TicketingProjectException {
+        //given
+        User employeeUser = getUserWithRole("Employee");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(), anyBoolean())).thenReturn(employeeUser);
+        when(userRepository.save(any())).thenReturn(employeeUser);
+        when(taskService.listAllNonCompletedByAssignedEmployee(any())).thenReturn(new ArrayList<>());
+        //when
+        userService.delete(employeeUser.getUserName());
+        //then
+        assertTrue(employeeUser.getIsDeleted());
+        assertNotEquals("user3", employeeUser.getUserName());
     }
 
 
