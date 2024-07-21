@@ -4,6 +4,7 @@ import com.cydeo.dto.RoleDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Role;
 import com.cydeo.entity.User;
+import com.cydeo.exception.TicketingProjectException;
 import com.cydeo.mapper.UserMapper;
 import com.cydeo.repository.UserRepository;
 import com.cydeo.service.KeycloakService;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -93,6 +95,16 @@ public class UserServiceImplTest {
         userDTO2.setId(2L);
         userDTO2.setFirstName("Emily");
         return List.of(userDTO, userDTO2);
+    }
+
+    private User getUserWithRole(String role){
+        User user3 = new User();
+        user3.setUserName("user3");
+        user3.setPassWord("Abc1");
+        user3.setEnabled(true);
+        user3.setIsDeleted(false);
+        user3.setRole(new Role(role));
+        return user3;
     }
 
     @AfterEach
@@ -199,6 +211,23 @@ public class UserServiceImplTest {
         assertEquals(expectedPassword, updatedUser.getPassWord());
         //verify that passwordEncoder is executed
         verify(passwordEncoder).encode(anyString());
+
+    }
+
+    @Test
+    void should_delete_manager() throws TicketingProjectException {
+        //given
+        User managerUser = getUserWithRole("Manager");
+        when(userRepository.findByUserNameAndIsDeleted(anyString(), anyBoolean())).thenReturn(managerUser);
+        when(userRepository.save(any())).thenReturn(managerUser);
+        when(projectService.listAllNonCompletedByAssignedManager(any())).thenReturn(new ArrayList<>());
+        //when
+        userService.delete(managerUser.getUserName());
+        //then
+        assertTrue(managerUser.getIsDeleted());
+        assertNotEquals("user3", managerUser.getUserName());
+
+
 
     }
 
